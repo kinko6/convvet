@@ -81,8 +81,6 @@ class User_model extends CI_Model {
         return $this->db->update('users', $data);
     }
     
-
-
     public function get_users_by_role($role) {
         $this->db->select('*');
         $this->db->from('users'); // Supondo que sua tabela de usuários se chama 'users'
@@ -99,6 +97,64 @@ class User_model extends CI_Model {
         return $query->result();  // Retorna os resultados como um array de objetos
     }
 
+    public function get_role_by_user($user_id) {
+        $this->db->select('role');
+        $this->db->from('users');
+        $this->db->where('id', $user_id);
+        $query = $this->db->get();
+        
+        return $query->row()->role;  // Retorna o role do usuário
+    }
+
+    // Função para pegar os pets do usuário
+    public function get_pets_by_user($user_id) {
+        $this->db->where('user_id', $user_id);
+        $query = $this->db->get('pets');
+        return $query->result();
+    }
+
+    // Função para pegar as clínicas associadas ao usuário
+    public function get_clinics_by_user($user_id) {
+        // A clínica do usuário pode ser definida pela sua role
+        $this->db->where('id', $user_id);
+        $query = $this->db->get('users');
+        $user = $query->row(); // Pega os dados do usuário, incluindo o role
+
+        // Se o usuário for, por exemplo, um "administrador" de clínica, retorna as clínicas associadas ao role dele
+        if ($user) {
+            if ($user->role == 'admin') {
+                // Exemplo de como retornar uma clínica caso o usuário seja um "admin"
+                return [
+                    (object)[
+                        'id' => 1,
+                        'name' => 'Clínica Veterinária Central'
+                    ]
+                ];
+            } else {
+                // Retornar outra lógica com base na role do usuário
+                return [
+                    (object)[
+                        'id' => 2,
+                        'name' => 'Clínica Pet Care'
+                    ]
+                ];
+            }
+        }
+        return []; // Se o usuário não tiver role válida, retorna um array vazio
+    }
+
+    // Função para criar o agendamento
+    public function create_appointment($user_id, $pet_id, $clinic_id, $description) {
+        $data = [
+            'user_id' => $user_id,
+            'pet_id' => $pet_id,
+            'clinic_id' => $clinic_id,
+            'description' => $description,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+        return $this->db->insert('appointments', $data);
+    }
+            
 
 }
 ?>

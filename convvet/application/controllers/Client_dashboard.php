@@ -28,63 +28,89 @@ if ($this->session->userdata('user_id')) {
 
 }
 
-
 public function create_appointment() {
-    // Verificar se o usuário está logado
-    $this->verifySession();
-    
-    // Obter o ID do usuário logado
+    // Verificar se o usuário está autenticado
+    if (!$this->session->userdata('user_id')) {
+        redirect('login');
+    }
+
+    // Carregar o modelo de Usuário
+    $this->load->model('User_model');
+
+    // Pegar o ID do usuário da sessão
     $user_id = $this->session->userdata('user_id');
-
-    // Buscar os pets do usuário
-    $pets = $this->Pet_model->get_pets_by_user($user_id);
+    $role = $this->session->userdata('role'); // Pega a role do usuário da sessão
     
-
-    // Buscar as clínicas
-    $clinics = $this->User_model->get_clinics();
+    // Buscar os pets do usuário
+    $pets = $this->User_model->get_pets_by_user($user_id);
 
     // Passar os dados para a view
     $data = [
-        'pets' => $pets,
-        'clinics' => $clinics
+        'pets' => $pets
     ];
 
+    // Carregar a view
     $this->load->view('client/create_appointment', $data);
 }
 
 
 public function submit_appointment() {
-    // Verificar se o usuário está logado
-    $this->verifySession();
-    
-    // Recupera o ID do usuário a partir da sessão
+    // Verificar se o usuário está autenticado
+    if (!$this->session->userdata('user_id')) {
+        redirect('login');
+    }
+
+    // Obter os dados do formulário
     $user_id = $this->session->userdata('user_id');
-    
-    // Coleta os dados do formulário
-    $clinic_id = $this->input->post('clinic_id');
     $pet_id = $this->input->post('pet_id');
     $description = $this->input->post('description');
+    $role = $this->session->userdata('role'); // Pega a role do usuário da sessão
 
-    // Dados do novo agendamento
-    $data = [
-        'user_id' => $user_id,
-        'clinic_id' => $clinic_id,
-        'pet_id' => $pet_id,
-        'description' => $description,
-        'status' => 'pendente'  // Status inicial
-    ];
+    // Carregar o modelo de Usuário
+    $this->load->model('User_model');
 
-    // Chama o modelo para inserir o agendamento
-    if ($this->Appointment_model->insert_appointment($data)) {
-        // Redireciona para a lista de agendamentos
-        $this->session->set_flashdata('success', 'Agendamento realizado com sucesso!');
-        redirect('client_dashboard/appointments');
-    } else {
-        // Em caso de erro
-        $this->session->set_flashdata('error', 'Erro ao realizar agendamento. Tente novamente.');
-        redirect('client_dashboard/create_appointment');
-    }
+    // Criar o agendamento
+    $this->User_model->create_appointment($user_id, $pet_id, $description, $role);
+
+    // Redirecionar ou exibir sucesso
+    redirect('client/appointments');
 }
+
+
+
+
+
+public function edit_appointment($appointment_id) {
+    $this->verifySession();
+    $user_id = $this->session->userdata('user_id');
+
+    // Recupera o agendamento
+    $appointment = $this->Appointment_model->get_appointment_by_id($appointment_id);
+
+    if (!$appointment) {
+        show_404();
+    }
+
+    // Verificar se o agendamento pertence ao usuário logado
+    if ($appointment->user_id != $user_id) {
+        redirect('client_dashboard/appointments'); // Redireciona se não for o agendamento do usuário
+    }
+
+    // Aqui buscamos a clínica associada ao agendamento (por exemplo, para exibir detalhes)
+    $clinic = $this->User_model->get_clinic_by_user_id($appointment->clinic_id);
+
+    // Carregar dados necessários para editar o agendamento
+    $data['appointment'] = $appointment;
+    $data['clinic'] = $clinic;
+
+    // Carregar a view para editar
+    $this->load->view('client/edit_appointment', $data);
+}
+
+
+
+
+
 
 public function create_emergency() {
     // Carregar o modelo necessário
@@ -477,37 +503,37 @@ public function appointments() {
 }
 
 // Função para editar um agendamento
-public function edit_appointment($appointment_id) {
-    $this->verifySession();
-    $user_id = $this->session->userdata('user_id');
+// public function edit_appointment($appointment_id) {
+//     $this->verifySession();
+//     $user_id = $this->session->userdata('user_id');
 
-    // Obter o agendamento pelo ID
-    $appointment = $this->Appointment_model->get_appointment_by_id($appointment_id);
+//     // Obter o agendamento pelo ID
+//     $appointment = $this->Appointment_model->get_appointment_by_id($appointment_id);
 
-    if (!$appointment) {
-        show_404();
-    }
+//     if (!$appointment) {
+//         show_404();
+//     }
 
-    // Verificar se o agendamento pertence ao usuário logado
-    if ($appointment->user_id != $user_id) {
-        redirect('client/appointments');
-    }
+//     // Verificar se o agendamento pertence ao usuário logado
+//     if ($appointment->user_id != $user_id) {
+//         redirect('client/appointments');
+//     }
 
-    // Carregar os modelos necessários para editar os dados
-    $this->load->model('Pet_model');
-    $this->load->model('User_model');
+//     // Carregar os modelos necessários para editar os dados
+//     $this->load->model('Pet_model');
+//     $this->load->model('User_model');
 
-    // Obter lista de clínicas e pets
-    $clinics = $this->User_model->get_users_by_role('clinic');
-    $pets = $this->Pet_model->get_pets_by_user($user_id);
+//     // Obter lista de clínicas e pets
+//     $clinics = $this->User_model->get_users_by_role('clinic');
+//     $pets = $this->Pet_model->get_pets_by_user($user_id);
 
-    $data['appointment'] = $appointment;
-    $data['clinics'] = $clinics;
-    $data['pets'] = $pets;
+//     $data['appointment'] = $appointment;
+//     $data['clinics'] = $clinics;
+//     $data['pets'] = $pets;
 
-    // Carregar a visão de edição
-    $this->load->view('client/edit_appointment', $data);
-}
+//     // Carregar a visão de edição
+//     $this->load->view('client/edit_appointment', $data);
+// }
 
 public function update_appointment($appointment_id) {
     // Obter os dados do formulário
