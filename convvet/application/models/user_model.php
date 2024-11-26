@@ -89,12 +89,9 @@ class User_model extends CI_Model {
         return $query->result(); // Retorna todos os usuários com a role
     }
     public function get_clinics() {
-        // Consulta para buscar usuários com o papel de 'clinic'
-        $this->db->select('*');
-        $this->db->from('users');  // Supondo que você tenha uma tabela 'users'
-        $this->db->where('role', 'clinic');  // Filtra os usuários com o papel 'clinic'
-        $query = $this->db->get();
-        return $query->result();  // Retorna os resultados como um array de objetos
+        $this->db->where('role', 'clinic');  // Filtra usuários do tipo 'clinic'
+        $query = $this->db->get('users');    // Busca na tabela 'users'
+        return $query->result_array();        // Retorna os dados como array
     }
 
     public function get_role_by_user($user_id) {

@@ -68,3 +68,11 @@
 .btn-delete:hover {
     background-color: #c9302c;
 }
+input[type="number"], select{
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    font-size: 15px;
+    background: #ffffff;
+}

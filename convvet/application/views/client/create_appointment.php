@@ -87,23 +87,45 @@
     <div class="body2">
         <div class="appointment-form-container">
             <h2 class="form-title">Criar Agendamento</h2>
-            <form method="post" action="<?php echo base_url('client_dashboard/submit_appointment'); ?>">
-                <div>
-                    <label for="pet_id">Pet</label>
-                    <select name="pet_id" id="pet_id" required>
+            <form action="<?= site_url('client_dashboard/submit_appointment') ?>" method="post" class="appointment-form">
+            
+            <!-- Escolher clínica -->
+            <div class="form-group">
+                <label for="clinic_id">Escolha a clínica:</label>
+                <select name="clinic_id" id="clinic_id">
+                    <?php foreach ($clinics as $clinic): ?>
+                        <option value="<?= $clinic['id'] ?>"><?= $clinic['name'] ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <!-- Escolher Pet -->
+            <div class="form-group">
+                <label for="pet_id">Escolha o Pet:</label>
+                <select name="pet_id" id="pet_id">
+                    <?php if (!empty($pets)): ?>
                         <?php foreach ($pets as $pet): ?>
-                            <option value="<?php echo $pet->id; ?>"><?php echo $pet->name; ?></option>
+                            <!-- Exibe os pets disponíveis -->
+                            <option value="<?= htmlspecialchars($pet->id) ?>"><?= htmlspecialchars($pet->name) ?> - <?= htmlspecialchars($pet->type) ?> (<?= htmlspecialchars($pet->breed) ?>, <?= $pet->age ?> anos)</option>
                         <?php endforeach; ?>
-                    </select>
-                </div>
+                    <?php else: ?>
+                        <!-- Caso não haja pets -->
+                        <option value="">Nenhum pet encontrado</option>
+                    <?php endif; ?>
+                </select>
+            </div>
 
-                <div>
-                    <label for="description">Descrição</label>
-                    <textarea name="description" id="description" required></textarea>
-                </div>
+            <!-- Descrição -->
+            <div class="form-group">
+                <label for="description">Descrição:</label>
+                <textarea name="description" id="description" placeholder="Detalhe o motivo do agendamento..."></textarea>
+            </div>
 
-                <button type="submit">Agendar</button>
-            </form>
+            <!-- Botão de envio -->
+            <div class="form-group">
+                <button type="submit" class="btn-submit">Enviar Agendamento</button>
+            </div>
+        </form>
         </div>
     </div>
     <script src="../js/navbar.js"></script>

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../css/navbar.css">
     
     <link rel="stylesheet" href="../css/cadastros.css">
+    <link rel="stylesheet" href="../css/pets.css">
 <style>
     input[type="text"],
 input[type="password"],

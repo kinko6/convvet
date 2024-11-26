@@ -14,9 +14,11 @@
 <body class="home">
 
 <div class="menu">
-      <img id="logo" class="logo-image" src="../assets/convvet.png" alt="Logo">
+      <img id="logo" class="logo-image" src="assets/convvet.png" alt="Logo">
   </div>
-
+    <button class="open-btn" id="open-btn">&#9776;</button>
+    <div id="navbar-container"></div>
+    <script src="../js/navbar.js"></script>
 
     <div class="container">
     <div class="container-all">
