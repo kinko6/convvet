@@ -21,3 +21,4 @@ jobs:
           password: Ux8AitUDBEj
           local-dir: ./  # Altere se precisar enviar apenas uma subpasta
           server-dir: /htdocs/  # Altere para o diretório correto no servidor
+
