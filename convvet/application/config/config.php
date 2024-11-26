@@ -537,4 +537,4 @@ $config['index_page'] = '';  // Deixe vazio para remover o index.php
 
 $config['sess_save_path'] = APPPATH . 'sessions';
 $config['sess_save_path'] = FCPATH . 'application/sessions';  // Ou qualquer outro diretório que tenha permissão de escrita
-$config['base_url'] = 'https://convvet-mibywn8cf-es-projects-13484b5c.vercel.app/';
+$config['base_url'] = 'https://convvet.vercel.app//';
